@@ -1,2 +1,0 @@
-# FlutterSample
-Flutter learning sample.
