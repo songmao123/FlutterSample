@@ -9,12 +9,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: true,
       title: 'Flutter Demo',
       theme: ThemeData(
-        primaryColor: Colors.white,
+        primaryColor: Colors.pink,
       ),
-      home: MyContent(title: 'Flutter Demo Home Page'),
+      home: MyContent(title: 'Flutter Home'),
     );
   }
 }
@@ -33,13 +33,17 @@ class MyContent extends StatefulWidget {
 class MyAppState extends State<MyContent> {
   final List<WordPair> _suggestions = <WordPair>[];
   final Set<WordPair> _saved = Set<WordPair>();
-  final TextStyle _biggerFont = const TextStyle(fontSize: 18.0);
+  final TextStyle _biggerFont =
+      const TextStyle(fontSize: 18.0, fontFamily: 'Lobster');
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(
+          widget.title,
+          style: TextStyle(fontFamily: 'Shrikhand'),
+        ),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.list),
@@ -83,14 +87,14 @@ class MyAppState extends State<MyContent> {
     );
   }
 
- void _pushChat() {
-   Navigator.push(
-     context,
-     MaterialPageRoute(
-       builder: (context) => ChatApp(),
-     ),
-   );
- }
+  void _pushChat() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatApp(),
+      ),
+    );
+  }
 }
 
 class RandomWords extends StatefulWidget {
