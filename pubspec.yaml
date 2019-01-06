@@ -20,6 +20,8 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
   english_words: ^3.1.0
+  http: ^0.12.0
+  mockito: ^4.0.0
 
 dev_dependencies:
   flutter_test:
@@ -56,15 +58,15 @@ flutter:
   fonts:
     - family: Shrikhand
       fonts:
-        - asset: fonts\Shrikhand-Regular.ttf
+        - asset: fonts/Shrikhand-Regular.ttf
 
     - family: Lobster
       fonts:
-        - asset: fonts\Lobster-Regular.ttf
+        - asset: fonts/Lobster-Regular.ttf
     
     - family: Acme
       fonts:
-        - asset: fonts\Acme-Regular.ttf
+        - asset: fonts/Acme-Regular.ttf
 
   #
   # For details regarding fonts from package dependencies,

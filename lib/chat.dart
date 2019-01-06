@@ -88,25 +88,29 @@ class OrientationList extends StatelessWidget {
     return OrientationBuilder(
       builder: (BuildContext context, Orientation orientation) {
         return GridView.count(
-          crossAxisCount: orientation == Orientation.portrait ? 2 : 3,
+          crossAxisCount: 2,
+          childAspectRatio: 3,
           children: List.generate(100, (index) {
-            return GestureDetector(
+            return InkWell(
               onTap: () {
                 _showSnackbar(context);
               },
-              child: Container(
-                padding: EdgeInsets.only(left: 16.0),
-                height: 35.0,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(Icons.star_border),
-                    SizedBox(width: 10.0),
-                    Text('Item $index'),
-                  ],
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  SizedBox(width: 16.0),
+                  Icon(
+                    Icons.star,
+                    color: Colors.pink,
+                  ),
+                  SizedBox(width: 24.0),
+                  Text(
+                    'Hello item $index',
+                    style: TextStyle(color: Colors.pink),
+                  ),
+                ],
               ),
             );
           }),
