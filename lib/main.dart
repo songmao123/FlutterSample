@@ -1,158 +1,190 @@
-import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/chat.dart';
+import 'dart:ui';
+
+import 'package:flutter_app/content.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: true,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primaryColor: Colors.pink,
-      ),
-      home: MyContent(title: 'Flutter Home'),
+      home: LoginPage(),
+      theme: ThemeData(primarySwatch: Colors.teal),
     );
   }
 }
 
-class MyContent extends StatefulWidget {
-  final String title;
-
-  MyContent({Key key, this.title}) : super(key: key);
-
+class LoginPage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() {
-    return MyAppState();
-  }
+  State<StatefulWidget> createState() => LoginPageState();
 }
 
-class MyAppState extends State<MyContent> {
-  final List<WordPair> _suggestions = <WordPair>[];
-  final Set<WordPair> _saved = Set<WordPair>();
-  final TextStyle _biggerFont =
-      const TextStyle(fontSize: 18.0, fontFamily: 'Lobster');
+class LoginPageState extends State<LoginPage>
+    with SingleTickerProviderStateMixin {
+  AnimationController _logoAnimationController;
+  Animation<double> _logoAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _logoAnimationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 800),
+    );
+    _logoAnimation = CurvedAnimation(
+      parent: _logoAnimationController,
+      curve: Curves.easeOut,
+    );
+    _logoAnimation.addListener(() => this.setState(() {}));
+    _logoAnimationController.forward();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.title,
-          style: TextStyle(fontFamily: 'Shrikhand'),
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.list),
-            onPressed: _pushSaved,
-          ),
-          IconButton(
-            icon: Icon(Icons.message),
-            onPressed: _pushChat,
-          )
-        ],
-      ),
-      body: new RandomWords(
-          suggestions: _suggestions, saved: _saved, biggerFont: _biggerFont),
-    );
-  }
-
-  void _pushSaved() {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (BuildContext context) {
-          final Iterable<ListTile> titles = _saved.map((WordPair pair) {
-            return ListTile(
-              title: new Text(pair.asPascalCase, style: _biggerFont),
-            );
-          });
-          final List<Widget> divided = ListTile.divideTiles(
-            context: context,
-            tiles: titles,
-          ).toList();
-
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Saved Suggestions'),
-            ),
-            body: new ListView(
-              children: divided,
-            ),
+      resizeToAvoidBottomPadding: false,
+      body: GestureDetector(
+        child: LoginBody(logoAnimation: _logoAnimation),
+        onTap: () {
+          FocusScope.of(context).requestFocus(
+            FocusNode(),
           );
         },
       ),
     );
   }
-
-  void _pushChat() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ChatApp(),
-      ),
-    );
-  }
 }
 
-class RandomWords extends StatefulWidget {
-  final List<WordPair> suggestions;
-  final Set<WordPair> saved;
-  final TextStyle biggerFont;
+class LoginBody extends StatelessWidget {
+  const LoginBody({
+    Key key,
+    @required Animation<double> logoAnimation,
+  })  : _logoAnimation = logoAnimation,
+        super(key: key);
 
-  RandomWords({Key key, this.suggestions, this.saved, this.biggerFont})
-      : super(key: key);
-
-  @override
-  RandomWordsState createState() => new RandomWordsState(
-      suggestions: suggestions, saved: saved, biggerFont: biggerFont);
-}
-
-class RandomWordsState extends State<RandomWords> {
-  final List<WordPair> suggestions;
-  final Set<WordPair> saved;
-  final TextStyle biggerFont;
-
-  RandomWordsState({Key key, this.suggestions, this.saved, this.biggerFont});
+  final Animation<double> _logoAnimation;
 
   @override
   Widget build(BuildContext context) {
-    return _buildSuggestions();
-  }
-
-  Widget _buildSuggestions() {
-    return new ListView.builder(
-      itemBuilder: (BuildContext context, int index) {
-        if (index.isOdd)
-          return Divider(
-            color: Colors.black12,
-            indent: 16.0,
-            height: 1.0,
-          );
-        final int i = index ~/ 2;
-        if (i >= suggestions.length) {
-          suggestions.addAll(generateWordPairs().take(10));
-        }
-        return _buildRow(suggestions[i]);
-      },
-    );
-  }
-
-  Widget _buildRow(WordPair wordPair) {
-    final bool alreadySaved = saved.contains(wordPair);
-    return new ListTile(
-      contentPadding:
-          EdgeInsets.only(left: 16.0, top: 8.0, right: 16.0, bottom: 8.0),
-      title: new Text(wordPair.asPascalCase, style: biggerFont),
-      trailing: new Icon(alreadySaved ? Icons.favorite : Icons.favorite_border,
-          color: alreadySaved ? Colors.red : null),
-      onTap: () {
-        setState(() {
-          alreadySaved ? saved.remove(wordPair) : saved.add(wordPair);
-        });
-      },
+    return Stack(
+      fit: StackFit.expand,
+      children: <Widget>[
+        Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/background.jpg"),
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(Colors.black12, BlendMode.darken),
+            ),
+          ),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.0),
+              ),
+            ),
+          ),
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Stack(
+              alignment: AlignmentDirectional.center,
+              children: <Widget>[
+                SizedBox(
+                  width: 100.0,
+                  height: 100.0,
+                ),
+                FlutterLogo(
+                  size: _logoAnimation.value * 100,
+                ),
+              ],
+            ),
+            Padding(
+              padding: EdgeInsets.all(40.0),
+              child: Theme(
+                data: ThemeData(
+                  hintColor: Colors.teal[300],
+                  primarySwatch: Colors.teal,
+                ),
+                child: Form(
+                  child: Column(
+                    children: <Widget>[
+                      TextFormField(
+                        decoration: InputDecoration(
+                          hintText: 'Email',
+                          hintStyle: TextStyle(color: Colors.white70),
+                          labelText: 'Enter your email',
+                          labelStyle: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.white70,
+                          ),
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.teal,
+                        ),
+                        maxLines: 1,
+                        textInputAction: TextInputAction.next,
+                      ),
+                      SizedBox(
+                        height: 30.0,
+                      ),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          border: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white)),
+                          hintText: 'Password',
+                          hintStyle: TextStyle(color: Colors.white70),
+                          labelText: 'Enter your password',
+                          labelStyle: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.white70,
+                          ),
+                        ),
+                        obscureText: true,
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.teal,
+                        ),
+                        textInputAction: TextInputAction.done,
+                      ),
+                      SizedBox(
+                        height: 50.0,
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: RaisedButton(
+                          color: Colors.teal,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0)),
+                          textColor: Colors.white70,
+                          padding: EdgeInsets.only(top: 14.0, bottom: 14.0),
+                          child: Text(
+                            'Login',
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MainApp(),
+                              ),
+                            );
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            )
+          ],
+        )
+      ],
     );
   }
 }
