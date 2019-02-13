@@ -19,32 +19,36 @@ class BannerData {
 }
 
 class BannerItem {
-  int courseId;
+  String desc;
   int id;
-  String name;
+  String imagePath;
+  int isVisible;
   int order;
-  int parentChapterId;
-  bool userControlSetTop;
-  int visible;
+  String title;
+  int type;
+  String url;
 
   BannerItem(
-      {this.courseId,
+      {this.desc,
       this.id,
-      this.name,
+      this.imagePath,
+      this.isVisible,
       this.order,
-      this.parentChapterId,
-      this.userControlSetTop,
-      this.visible});
+      this.title,
+      this.type,
+      this.url});
 
   factory BannerItem.fromJson(Map<String, dynamic> json) {
     return BannerItem(
-      courseId: json['courseId'],
+      desc: json['desc'],
       id: json['id'],
-      name: json['name'],
+      imagePath: json['imagePath'],
+      isVisible: json['isVisible'],
       order: json['order'],
-      parentChapterId: json['parentChapterId'],
-      userControlSetTop: json['userControlSetTop'],
-      visible: json['visible'],
+      title: json['title'],
+      type: json['type'],
+      url: json['url'],
     );
   }
 }
+

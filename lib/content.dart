@@ -1,20 +1,14 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/banner_page.dart';
 import 'package:flutter_app/chat.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class MainApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MyContent(title: 'Flutter Demo');
-    // return MaterialApp(
-    //   debugShowCheckedModeBanner: true,
-    //   title: 'Flutter Demo',
-    //   theme: ThemeData(
-    //     primaryColor: Colors.pink,
-    //   ),
-    //   home: MyContent(title: 'Flutter Home'),
-    // );
   }
 }
 
@@ -43,11 +37,7 @@ class MyAppState extends State<MyContent> {
           widget.title,
           style: TextStyle(fontFamily: 'Shrikhand'),
         ),
-        leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context);
-            }),
+        automaticallyImplyLeading: false,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.list),
@@ -129,34 +119,55 @@ class RandomWordsState extends State<RandomWords> {
   Widget _buildSuggestions() {
     return new ListView.builder(
       itemBuilder: (BuildContext context, int index) {
-        if (index.isOdd)
+        if (index.isOdd) {
           return Divider(
             color: Colors.black12,
             indent: 16.0,
             height: 1.0,
           );
+        }
         final int i = index ~/ 2;
         if (i >= suggestions.length) {
           suggestions.addAll(generateWordPairs().take(10));
         }
-        return _buildRow(suggestions[i]);
+        return _buildRow(suggestions[i], i);
       },
     );
   }
 
-  Widget _buildRow(WordPair wordPair) {
+  Widget _buildRow(WordPair wordPair, int i) {
     final bool alreadySaved = saved.contains(wordPair);
     return new ListTile(
       contentPadding:
           EdgeInsets.only(left: 16.0, top: 8.0, right: 16.0, bottom: 8.0),
-      title: new Text(wordPair.asPascalCase, style: biggerFont),
+      title: new Text(wordPair.asPascalCase + '   $i', style: biggerFont),
       trailing: new Icon(alreadySaved ? Icons.favorite : Icons.favorite_border,
           color: alreadySaved ? Colors.red : null),
       onTap: () {
         setState(() {
           alreadySaved ? saved.remove(wordPair) : saved.add(wordPair);
         });
+        // final snackBar = SnackBar(content: Text(wordPair.asPascalCase));
+        // Scaffold.of(context).showSnackBar(snackBar);
+
+        switch (i) {
+          case 0:
+            _navigateToBannerPage();
+            break;
+          default:
+            Fluttertoast.showToast(msg: wordPair.asPascalCase);
+            break;
+        }
       },
+    );
+  }
+
+  void _navigateToBannerPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BannerApp(),
+      ),
     );
   }
 }

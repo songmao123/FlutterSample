@@ -56,33 +56,58 @@ class LoginPageState extends State<LoginPage>
   }
 }
 
-class LoginBody extends StatelessWidget {
-  const LoginBody({
+class LoginBody extends StatefulWidget {
+  final Animation<double> _logoAnimation;
+
+  LoginBody({
     Key key,
     @required Animation<double> logoAnimation,
   })  : _logoAnimation = logoAnimation,
         super(key: key);
 
-  final Animation<double> _logoAnimation;
+  @override
+  LoginBodyState createState() => LoginBodyState();
+}
+
+class LoginBodyState extends State<LoginBody> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  String _email, _password;
+  bool _validate = false;
+  bool _raisedButtonState = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_formEditAction);
+    _passwordController.addListener(_formEditAction);
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
-      fit: StackFit.expand,
       children: <Widget>[
         Container(
           decoration: BoxDecoration(
             image: DecorationImage(
               image: AssetImage("assets/background.jpg"),
               fit: BoxFit.cover,
-              colorFilter: ColorFilter.mode(Colors.black12, BlendMode.darken),
+              // colorFilter: ColorFilter.mode(Colors.black12, BlendMode.darken),
             ),
           ),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+            filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.0),
+                color: Colors.black.withOpacity(0.3),
               ),
             ),
           ),
@@ -98,7 +123,7 @@ class LoginBody extends StatelessWidget {
                   height: 100.0,
                 ),
                 FlutterLogo(
-                  size: _logoAnimation.value * 100,
+                  size: widget._logoAnimation.value * 100,
                 ),
               ],
             ),
@@ -110,75 +135,9 @@ class LoginBody extends StatelessWidget {
                   primarySwatch: Colors.teal,
                 ),
                 child: Form(
-                  child: Column(
-                    children: <Widget>[
-                      TextFormField(
-                        decoration: InputDecoration(
-                          hintText: 'Email',
-                          hintStyle: TextStyle(color: Colors.white70),
-                          labelText: 'Enter your email',
-                          labelStyle: TextStyle(
-                            fontSize: 16.0,
-                            color: Colors.white70,
-                          ),
-                        ),
-                        keyboardType: TextInputType.emailAddress,
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.teal,
-                        ),
-                        maxLines: 1,
-                        textInputAction: TextInputAction.next,
-                      ),
-                      SizedBox(
-                        height: 30.0,
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          border: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white)),
-                          hintText: 'Password',
-                          hintStyle: TextStyle(color: Colors.white70),
-                          labelText: 'Enter your password',
-                          labelStyle: TextStyle(
-                            fontSize: 16.0,
-                            color: Colors.white70,
-                          ),
-                        ),
-                        obscureText: true,
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.teal,
-                        ),
-                        textInputAction: TextInputAction.done,
-                      ),
-                      SizedBox(
-                        height: 50.0,
-                      ),
-                      SizedBox(
-                        width: double.infinity,
-                        child: RaisedButton(
-                          color: Colors.teal,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0)),
-                          textColor: Colors.white70,
-                          padding: EdgeInsets.only(top: 14.0, bottom: 14.0),
-                          child: Text(
-                            'Login',
-                            style: TextStyle(fontSize: 16.0),
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => MainApp(),
-                              ),
-                            );
-                          },
-                        ),
-                      )
-                    ],
-                  ),
+                  key: _formKey,
+                  autovalidate: _validate,
+                  child: formUI(),
                 ),
               ),
             )
@@ -186,5 +145,124 @@ class LoginBody extends StatelessWidget {
         )
       ],
     );
+  }
+
+  Column formUI() {
+    return Column(
+      children: <Widget>[
+        TextFormField(
+          decoration: InputDecoration(
+            hintText: 'Email',
+            hintStyle: TextStyle(color: Colors.white70),
+            labelText: 'Enter your email',
+            labelStyle: TextStyle(
+              fontSize: 16.0,
+              color: Colors.white70,
+            ),
+          ),
+          keyboardType: TextInputType.emailAddress,
+          style: TextStyle(
+            fontSize: 16.0,
+            color: Colors.teal,
+          ),
+          maxLines: 1,
+          textInputAction: TextInputAction.next,
+          validator: _validEmail,
+          onSaved: (String value) {
+            _email = value;
+          },
+          controller: _emailController,
+        ),
+        SizedBox(
+          height: 30.0,
+        ),
+        TextFormField(
+          decoration: InputDecoration(
+            border: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white)),
+            hintText: 'Password',
+            hintStyle: TextStyle(color: Colors.white70),
+            labelText: 'Enter your password',
+            labelStyle: TextStyle(
+              fontSize: 16.0,
+              color: Colors.white70,
+            ),
+          ),
+          obscureText: true,
+          style: TextStyle(
+            fontSize: 16.0,
+            color: Colors.teal,
+          ),
+          textInputAction: TextInputAction.done,
+          validator: _validPassowrd,
+          onSaved: (String value) {
+            _password = value;
+          },
+          controller: _passwordController,
+        ),
+        SizedBox(
+          height: 60.0,
+        ),
+        SizedBox(
+          width: double.infinity,
+          child: RaisedButton(
+            color: Colors.teal,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0)),
+            disabledColor: Colors.grey[400],
+            textColor: Colors.white70,
+            disabledTextColor: Colors.white70,
+            padding: EdgeInsets.only(top: 14.0, bottom: 14.0),
+            child: Text(
+              'Login',
+              style: TextStyle(fontSize: 16.0),
+            ),
+            onPressed: _raisedButtonState ? _validParams : null,
+          ),
+        )
+      ],
+    );
+  }
+
+  String _validEmail(String value) {
+    Pattern pattern =
+        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+    RegExp regExp = RegExp(pattern);
+    if (!regExp.hasMatch(value)) {
+      return 'Invalid email';
+    } else {
+      return null;
+    }
+  }
+
+  void _validParams() {
+    if (_formKey.currentState.validate()) {
+      _formKey.currentState.save();
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MainApp(),
+        ),
+      );
+    } else {
+      setState(() {
+        _validate = true;
+      });
+    }
+  }
+
+  String _validPassowrd(String value) {
+    if (value.length < 6) {
+      return 'Password length must greater than 6';
+    }
+    return null;
+  }
+
+  void _formEditAction() {
+    bool valid =
+        _emailController.text.length > 0 && _passwordController.text.length > 0;
+    setState(() {
+      _raisedButtonState = valid;
+    });
   }
 }
