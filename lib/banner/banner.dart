@@ -1,3 +1,6 @@
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 class BannerData {
   int errorCode;
   String errorMsg;
@@ -52,3 +55,11 @@ class BannerItem {
   }
 }
 
+Future<BannerData> fetchBanner() async {
+  final response = await http.get('http://www.wanandroid.com/banner/json');
+  if (response.statusCode == 200) {
+    return BannerData.fromJson(jsonDecode(response.body));
+  } else {
+    throw Exception('Fail to load banner data.');
+  }
+}

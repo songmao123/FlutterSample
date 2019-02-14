@@ -71,17 +71,18 @@ class LoginBody extends StatefulWidget {
 
 class LoginBodyState extends State<LoginBody> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _emailController = TextEditingController(text: 'SQSong66@gmail.com');
+  final _passwordController = TextEditingController(text: '123456');
+  
   String _email, _password;
   bool _validate = false;
   bool _raisedButtonState = false;
 
   @override
   void initState() {
-    super.initState();
     _emailController.addListener(_formEditAction);
     _passwordController.addListener(_formEditAction);
+    super.initState();
   }
 
   @override

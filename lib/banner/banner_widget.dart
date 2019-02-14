@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_app/banner/banner.dart';
 
@@ -19,7 +20,9 @@ class BannerWidget extends StatefulWidget {
 
 class BannerWidgetState extends State<BannerWidget> {
   Timer _timer;
+  double screenWidth;
   int _currentIndex = 0;
+  double bannerHeight = 180.0;
   PageController _pageController;
 
   @override
@@ -37,12 +40,17 @@ class BannerWidgetState extends State<BannerWidget> {
   void startLoop() {
     stopLoop();
     _timer = Timer.periodic(Duration(milliseconds: 5000), (timer) {
-      print('Timer is comming...');
+      // print('Timer is comming...');
       _pageController.animateToPage(
         _pageController.page.toInt() + 1,
-        duration: Duration(milliseconds: 500),
+        duration: Duration(milliseconds: 300),
         curve: Curves.linear,
       );
+    });
+
+    _getImage(widget.bannerList[0].imagePath).then((value) {
+      int height = value.height;
+      print('Image height: $height');
     });
   }
 
@@ -51,10 +59,19 @@ class BannerWidgetState extends State<BannerWidget> {
     _timer = null;
   }
 
+  Future<ui.Image> _getImage(String url) async {
+    Completer<ui.Image> completer = Completer();
+    NetworkImage(url).resolve(ImageConfiguration()).addListener((imageInfo, _) {
+      completer.complete(imageInfo.image);
+    });
+    return completer.future;
+  }
+
   @override
   Widget build(BuildContext context) {
+    screenWidth = MediaQuery.of(context).size.width;
     return Container(
-      height: 160.0,
+      height: bannerHeight,
       child: Stack(
         children: <Widget>[
           vierPagerWidget(),
@@ -89,7 +106,7 @@ class BannerWidgetState extends State<BannerWidget> {
 
   Widget indicatorWidget() {
     return Align(
-      alignment: Alignment.bottomRight,
+      alignment: Alignment.bottomCenter,
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Row(
