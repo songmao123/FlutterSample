@@ -18,7 +18,8 @@ class BannerWidget extends StatefulWidget {
   State<StatefulWidget> createState() => BannerWidgetState();
 }
 
-class BannerWidgetState extends State<BannerWidget> {
+class BannerWidgetState extends State<BannerWidget>
+    with WidgetsBindingObserver {
   Timer _timer;
   double screenWidth;
   int _currentIndex = 0;
@@ -34,6 +35,16 @@ class BannerWidgetState extends State<BannerWidget> {
       viewportFraction: 1.0,
     );
     startLoop();
+
+    _getImage(widget.bannerList[0].imagePath).then((value) {
+      double height = (screenWidth - 16.0) * value.height / value.width;
+      print('Image height: $height, Screen width: $screenWidth');
+      setState(() {
+        bannerHeight = height;
+      });
+    });
+
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
   }
 
@@ -47,16 +58,21 @@ class BannerWidgetState extends State<BannerWidget> {
         curve: Curves.linear,
       );
     });
-
-    _getImage(widget.bannerList[0].imagePath).then((value) {
-      int height = value.height;
-      print('Image height: $height');
-    });
   }
 
   void stopLoop() {
     _timer?.cancel();
     _timer = null;
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      startLoop();
+    } else if (state == AppLifecycleState.paused) {
+      stopLoop();
+    }
+    super.didChangeAppLifecycleState(state);
   }
 
   Future<ui.Image> _getImage(String url) async {
@@ -141,6 +157,7 @@ class BannerWidgetState extends State<BannerWidget> {
   @override
   void dispose() {
     stopLoop();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 }

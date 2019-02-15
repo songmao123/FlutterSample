@@ -56,9 +56,25 @@ class BannerBody extends StatelessWidget {
         if (snapshot.hasData) {
           return BannerWidget(bannerList: snapshot.data.data);
         } else if (snapshot.hasError) {
-          return Text('${snapshot.error}');
+          return Container(
+            alignment: Alignment.center,
+            height: 180.0,
+            child: Stack(
+              children: <Widget>[
+                Text('${snapshot.error}'),
+              ],
+            ),
+          );
         } else {
-          return CircularProgressIndicator();
+          return Container(
+            alignment: Alignment.center,
+            height: 180.0,
+            child: Stack(
+              children: <Widget>[
+                CircularProgressIndicator(),
+              ],
+            ),
+          );
         }
       },
     );
@@ -126,44 +142,23 @@ class IndicatorWidgetState extends State<IndicatorWidget>
     with TickerProviderStateMixin {
   Timer _timer;
   int _currentIndex = 0;
-  // Animation<int> animation;
-  // AnimationController animationController;
 
   @override
   void initState() {
-    // animationController = AnimationController(
-    //     duration: const Duration(milliseconds: 2000), vsync: this);
-    // final curve =
-    //     CurvedAnimation(parent: animationController, curve: Curves.linear);
-    // animation = IntTween(begin: 0, end: 2).animate(curve)
-    //   ..addListener(() {
-    //     setState(() {
-    //       _currentIndex = animation.value;
-    //       print('Animation value: $_currentIndex');
-    //     });
-    //   });
-    // animationController.addStatusListener((state) {
-    //   if (state == AnimationStatus.completed) {
-    //     print('Animation completed.');
-    //     animationController.reset();
-    //     animationController.forward();
-    //   }
-    // });
-    // // animationController.addListener(() {});
-    // animationController.forward();
-    _timer = Timer.periodic(Duration(milliseconds: 350), (timer) {
+    _timer = Timer.periodic(Duration(milliseconds: 300), (timer) {
       setState(() {
         _currentIndex++;
       });
     });
+    
     super.initState();
   }
 
   @override
   void dispose() {
-    // animationController.dispose();
     _timer?.cancel();
     _timer = null;
+    
     super.dispose();
   }
 
